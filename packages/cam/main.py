@@ -1,10 +1,6 @@
 import argparse
-import io
-
 import cv2
-import numpy as np
 from PIL import Image
-from altair import layer
 from torch import nn
 from torch.autograd import Variable
 from torchvision import transforms
@@ -39,7 +35,7 @@ def get_net(net_name, weight_path=None):
         net = models.shufflenet_v2_x1_0(pretrained=pretrain)
     else:
         raise ValueError('invalid network name:{}'.format(net_name))
-
+    print(net.eval())
     return net
 
 
@@ -56,32 +52,30 @@ def get_last_conv_name(net):
     return layer_name
 
 
-def prepare_input(img_pil):
+def prepare_input(image_file):
     normalize = transforms.Normalize(
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]
     )
-
     preprocess = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
         normalize
     ])
-
+    img_pil = Image.open(image_file)
     img_tensor = preprocess(img_pil)
     img_variable = Variable(img_tensor.unsqueeze(0))  # add the batch value
-    # np.newaxis
     return img_variable, img_tensor
 
 
 def main(args):
-    img_pil = Image.open(args.image_path)
     img = cv2.imread(args.image_path)
     height, width, _ = img.shape
 
-    img_variable, img_tensor = prepare_input(img_pil)
+    img_variable, img_tensor = prepare_input(args.image_path)
 
     net = get_net(args.network, args.weight_path)
+
     layer_name = get_last_conv_name(net) if args.layer_name is None else args.layer_name
     grad_cam = GradCAM(net, layer_name)
     mask = grad_cam(img_variable, args.class_id)
@@ -93,8 +87,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--network', type=str, default='resnet50')
-    parser.add_argument('--image_path', type=str, default='pic1.jpg')
+    parser.add_argument('--network', type=str, default='vgg16')
+    parser.add_argument('--image_path', type=str, default='test.jpg')
     parser.add_argument('--weight-path', type=str, default=None)
     parser.add_argument('--layer-name', type=str, default=None, help='last convolutional layer name')
     parser.add_argument('--class-id', type=int, default=None, help='class id')

@@ -3,6 +3,8 @@ import numpy as np
 
 __all__ = ['GradCAM']
 
+import torch
+
 from sympy.physics.vector import gradient
 
 
@@ -34,6 +36,36 @@ class GradCAM(object):
         for handler in self.handlers:
             handler.remove()
 
+    # def __call__(self, inputs, index):
+    #     """
+    #     :param inputs: [1,3,H,W]
+    #     :param index: class id
+    #     :return:
+    #     """
+    #     self.model.zero_grad()
+    #     output = self.model(inputs)
+    #     if index is None:
+    #         index = np.argmax(output.cpu().data.numpy())
+    #     target = output[0][index]
+    #     target.backward()
+    #
+    #     bz, nc, h, w = self.feature.shape
+    #
+    #     gradient = self.gradient[0].cpu().data.numpy()  # [C,H,W]
+    #     weight = np.mean(gradient, axis=(1, 2))  # [C]
+    #     feature = self.feature[0].cpu().data.numpy()  # [C,H,W]
+    #
+    #     cam = feature * weight[:, np.newaxis, np.newaxis]  # [C,H,W]
+    #     cam = np.sum(cam, axis=0)  # [H,W]
+    #     cam = np.maximum(cam, 0)  # ReLU
+    #
+    #     # 数值归一化
+    #     cam -= np.min(cam)
+    #     cam /= (np.max(cam) - np.min(cam))
+    #     cam = np.uint8(255 * cam)
+    #     cam = cv2.resize(cam, (224, 224))
+    #     return cam
+
     def __call__(self, inputs, index):
         """
         :param inputs: [1,3,H,W]
@@ -48,21 +80,21 @@ class GradCAM(object):
         target.backward()
 
         bz, nc, h, w = self.feature.shape
+        size_upsample = (256, 256)
 
         gradient = self.gradient[0].cpu().data.numpy()  # [C,H,W]
         weight = np.mean(gradient, axis=(1, 2))  # [C]
-        feature = self.feature[0].cpu().data.numpy()  # [C,H,W]
 
-        # feature = feature.reshape(nc, h * w)
+        feature = self.feature.cpu().data.numpy()
 
-        cam = feature * weight[:, np.newaxis, np.newaxis]  # [C,H,W]
-        # cam = weight * feature
-        cam = np.sum(cam, axis=0)  # [H,W]
-        cam = np.maximum(cam, 0)  # ReLU
+        feature_conv = feature.reshape((nc, h * w))
+        weight_softmax = weight
 
-        # 数值归一化
-        cam -= np.min(cam)
-        cam /= (np.max(cam) - np.min(cam))
-        cam = np.uint8(255 * cam)
-        cam = cv2.resize(cam, (224, 224))
-        return cam
+        cam = weight_softmax.dot(feature_conv)
+        cam = cam.reshape((h, w))
+        cam = cam - np.min(cam)
+
+        cam_img = cam / (np.max(cam) - np.min(cam))
+        cam_img = np.uint8(255 * cam_img)
+        cam_img = cv2.resize(cam_img, size_upsample)
+        return cam_img
