@@ -5,8 +5,6 @@ __all__ = ['GradCAM']
 
 import torch
 
-from sympy.physics.vector import gradient
-
 
 class GradCAM(object):
 
