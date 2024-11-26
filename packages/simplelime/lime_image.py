@@ -6,6 +6,7 @@ from functools import partial
 
 import numpy as np
 import sklearn
+from matplotlib import pyplot as plt
 from sklearn.utils import check_random_state
 from skimage.color import gray2rgb
 from tqdm.auto import tqdm
@@ -175,13 +176,16 @@ class LimeImageExplainer(object):
         if len(image.shape) == 2:
             image = gray2rgb(image)
         if random_seed is None:
-            random_seed = self.random_state.randint(0, high=1000)
+            random_seed = self.random_state.randint(0, high=1000) # 分割随机种子整数
 
         if segmentation_fn is None:
             segmentation_fn = SegmentationAlgorithm('quickshift', kernel_size=4,
-                                                    max_dist=200, ratio=0.2,
+                                                    max_dist=20, ratio=0.2,
                                                     random_seed=random_seed)
-        segments = segmentation_fn(image)
+        segments = segmentation_fn(image) # 超像素函数
+
+        plt.imshow(segments)
+        plt.show()
 
         fudged_image = image.copy()
         if hide_color is None:
@@ -191,7 +195,10 @@ class LimeImageExplainer(object):
                     np.mean(image[segments == x][:, 1]),
                     np.mean(image[segments == x][:, 2]))
         else:
-            fudged_image[:] = hide_color
+            fudged_image[:] = hide_color # 生成分割背景图
+
+        plt.imshow(fudged_image)
+        plt.show()
 
         top = labels
 
@@ -256,11 +263,13 @@ class LimeImageExplainer(object):
         rows = tqdm(data) if progress_bar else data
         for row in rows:
             temp = copy.deepcopy(image)
-            zeros = np.where(row == 0)[0]
+            zeros = np.where(row == 0)[0] # []
             mask = np.zeros(segments.shape).astype(bool)
             for z in zeros:
                 mask[segments == z] = True
             temp[mask] = fudged_image[mask]
+            # plt.imshow(temp)
+            # plt.show()
             imgs.append(temp)
             if len(imgs) == batch_size:
                 preds = classifier_fn(np.array(imgs))

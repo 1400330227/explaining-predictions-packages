@@ -12,6 +12,7 @@ import torch.nn.functional as F
 
 from simplelime import lime_image
 
+
 def get_image(path):
     with open(os.path.abspath(path), 'rb') as f:
         with Image.open(f) as image:
@@ -108,22 +109,36 @@ test_pred = batch_predict([pill_transf(img)])
 prob = test_pred.squeeze().argmax()
 print('{} -> {}'.format(prob, class_idx[str(prob)]))
 
-explainer = lime_image.LimeImageExplainer()
-explanation = explainer.explain_instance(np.array(pill_transf(img)),
-                                         batch_predict,  # classification function
-                                         top_labels=20,
-                                         hide_color=0,
-                                         num_samples=1000)  # number of images that will be sent to classification function
+if __name__ == '__main__':
+    explainer = lime_image.LimeImageExplainer()
+    explanation = explainer.explain_instance(np.array(pill_transf(img)),
+                                             batch_predict,  # classification function
+                                             top_labels=20,
+                                             hide_color=101,
+                                             random_seed=1000,
+                                             num_samples=10000)  # number of images that will be sent to classification function
 
-temp, mask = explanation.get_image_and_mask(explanation.top_labels[0], positive_only=True, num_features=30, hide_rest=False)
-img_boundry1 = mark_boundaries(temp / 255.0, mask)
-# img_boundry1 = mark_boundaries(temp / 2 + 0.5, mask)
-plt.imshow(img_boundry1)
+    # temp, mask = explanation.get_image_and_mask(explanation.top_labels[0], positive_only=True, num_features=30,
+    #                                             hide_rest=False)
+    # img_boundry1 = mark_boundaries(temp / 255.0, mask)
+    # plt.imshow(img_boundry1)
 
-plt.show()
+    # plt.show()
 
-temp, mask = explanation.get_image_and_mask(explanation.top_labels[0], positive_only=False, num_features=30, hide_rest=False)
-img_boundry2 = mark_boundaries(temp / 255.0, mask)
-plt.imshow(img_boundry2)
+    temp, mask = explanation.get_image_and_mask(explanation.top_labels[0], positive_only=False, num_features=30,
+                                                hide_rest=False)
 
-plt.show()
+    plt.imshow(temp)
+    plt.show()
+    plt.imshow(mask)
+    plt.show()
+
+    img_boundry2 = mark_boundaries(temp, mask)
+    plt.imshow(img_boundry2)
+
+    plt.show()
+
+    img_boundry3 = mark_boundaries(temp / 255.0, mask)
+    plt.imshow(img_boundry3)
+
+    plt.show()
