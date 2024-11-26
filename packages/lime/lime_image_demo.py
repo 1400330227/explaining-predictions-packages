@@ -24,11 +24,6 @@ data_path = './data/imagenet_class_index.json'
 img = get_image(path)
 
 
-# plt.figure()
-# plt.imshow(img)
-# plt.show()  # display it
-
-
 def get_input_transform():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     transform = transforms.Compose([
@@ -116,14 +111,7 @@ if __name__ == '__main__':
                                              top_labels=20,
                                              hide_color=101,
                                              random_seed=1000,
-                                             num_samples=10000)  # number of images that will be sent to classification function
-
-    # temp, mask = explanation.get_image_and_mask(explanation.top_labels[0], positive_only=True, num_features=30,
-    #                                             hide_rest=False)
-    # img_boundry1 = mark_boundaries(temp / 255.0, mask)
-    # plt.imshow(img_boundry1)
-
-    # plt.show()
+                                             num_samples=20)  # number of images that will be sent to classification function
 
     temp, mask = explanation.get_image_and_mask(explanation.top_labels[0], positive_only=False, num_features=30,
                                                 hide_rest=False)
