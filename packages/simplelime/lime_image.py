@@ -148,8 +148,8 @@ class LimeImageExplainer(object):
                                                     random_seed=random_seed)
         segments = segmentation_fn(image) # 超像素函数
 
-        plt.imshow(segments)
-        plt.show()
+        # plt.imshow(segments)
+        # plt.show()
 
         fudged_image = image.copy()
         if hide_color is None:
@@ -161,8 +161,8 @@ class LimeImageExplainer(object):
         else:
             fudged_image[:] = hide_color # 生成分割背景图
 
-        plt.imshow(fudged_image)
-        plt.show()
+        # plt.imshow(fudged_image)
+        # plt.show()
 
         top = labels
 
@@ -215,8 +215,8 @@ class LimeImageExplainer(object):
             for z in zeros:
                 mask[segments == z] = True
             temp[mask == True] = fudged_image[mask]
-            plt.imshow(temp)
-            plt.show()
+            # plt.imshow(temp)
+            # plt.show()
             imgs.append(temp)
             if len(imgs) == batch_size:
                 preds = classifier_fn(np.array(imgs))

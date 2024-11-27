@@ -108,7 +108,7 @@ if __name__ == '__main__':
     explainer = lime_image.LimeImageExplainer()
     explanation = explainer.explain_instance(np.array(pill_transf(img)),
                                              batch_predict,  # classification function
-                                             top_labels=20,
+                                             top_labels=5,
                                              hide_color=101,
                                              random_seed=1000,
                                              num_samples=20)  # number of images that will be sent to classification function
@@ -118,15 +118,15 @@ if __name__ == '__main__':
 
     plt.imshow(temp)
     plt.show()
-    plt.imshow(mask)
-    plt.show()
+    # plt.imshow(mask)
+    # plt.show()
 
-    img_boundry2 = mark_boundaries(temp, mask)
-    plt.imshow(img_boundry2)
-
-    plt.show()
-
-    img_boundry3 = mark_boundaries(temp / 255.0, mask)
-    plt.imshow(img_boundry3)
-
-    plt.show()
+    # img_boundry2 = mark_boundaries(temp, mask)
+    # plt.imshow(img_boundry2)
+    #
+    # plt.show()
+    #
+    # img_boundry3 = mark_boundaries(temp / 255.0, mask)
+    # plt.imshow(img_boundry3)
+    #
+    # plt.show()
