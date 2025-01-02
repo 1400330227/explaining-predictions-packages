@@ -1,4 +1,6 @@
 import json
+
+import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 import torch
@@ -62,10 +64,10 @@ transform = torchvision.transforms.Compose(transform)
 inv_transform = torchvision.transforms.Compose(inv_transform)
 
 
-def predict(img: np.ndarray) -> torch.Tensor:
-    img = nhwc_to_nchw(torch.Tensor(img)).to(device)
-    output = model(img)
-    return output
+# def predict(img: np.ndarray) -> torch.Tensor:
+#     img = nhwc_to_nchw(torch.Tensor(img)).to(device)
+#     output = model(img)
+#     return output
 
 
 def predict(img):
@@ -85,7 +87,7 @@ input_img = Xtr[0].unsqueeze(0)
 
 batch_size = 100
 
-n_evals = 2000  # 迭代次数越大，显著性分析粒度越精细，计算消耗时间越长
+n_evals = 200  # 迭代次数越大，显著性分析粒度越精细，计算消耗时间越长
 
 # 定义 mask，遮盖输入图像上的局部区域
 masker_blur = shap.maskers.Image("blur(64, 64)", Xtr[0].shape)

@@ -133,7 +133,7 @@ def get_image_and_mask(label, segments, image, local_exp, num_features):
     return temp, mask
 
 
-path = 'pic1.jpg'
+path = 'test.jpg'
 img = get_image(path)
 pill_transf = get_pill_transform()
 image = np.array(pill_transf(img))
@@ -143,14 +143,16 @@ classifier_fn = partial(batch_predict, model=model)
 
 if __name__ == '__main__':
     segments = get_segments(image)
-    num_samples = 2000
-    top_labels = 5
+    plt.imshow(segments)
+    plt.show()
+    num_samples = 3000
+    top_labels = 3
 
     data, labels = get_data_labels(image, segments, num_samples, classifier_fn)
     top = np.argsort(labels[0])[-top_labels:]
     distances = distances(data, data[0].reshape(1, -1))
-    num_features = data.shape[1] if data.shape[1] is not None else 30
-    # num_features = 30
+    # num_features = data.shape[1] if data.shape[1] is not None else 30
+    num_features = 4
 
     ret_exp = {}
     ret_exp['intercept'] = {}

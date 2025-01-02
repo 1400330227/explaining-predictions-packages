@@ -99,14 +99,14 @@ def batch_predict(images):
     return probs.detach().cpu().numpy()
 
 
-test_pred = batch_predict([pill_transf(img)])
+test_pred = batch_predict([pill_transf(img), pill_transf(img)])
 
 prob = test_pred.squeeze().argmax()
 print('{} -> {}'.format(prob, class_idx[str(prob)]))
 
 if __name__ == '__main__':
     explainer = lime_image.LimeImageExplainer()
-    explanation = explainer.explain_instance(np.array(pill_transf(img)),
+    explanation = explainer.explain_instance(np.array([pill_transf(img),pill_transf(img) ]),
                                              batch_predict,  # classification function
                                              top_labels=5,
                                              hide_color=101,

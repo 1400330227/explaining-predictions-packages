@@ -2,3 +2,7 @@
 .pt
 
 runs/
+CUB_200_2011/
+CUB_processed/
+places365/
+pretrained/
