@@ -47,7 +47,7 @@ def get_data_labels(image, segments, num_samples, classifier_fn):
     fudged_image = image.copy()
     fudged_image[:] = 101
     n_features = np.unique(segments).shape[0]  # 获取索引
-    data = np.array(torch.randint(0, 2, [num_samples, n_features]))
+    data = np.array(torch.randint(0, 2, [num_samples, n_features])) # size=[3000,32]
     data[0] = 1
     rows = tqdm(data)
     imgs = []

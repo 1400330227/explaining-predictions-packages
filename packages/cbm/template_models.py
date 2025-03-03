@@ -150,7 +150,7 @@ class End2EndModel(nn.Module):
     def forward(self, x):
         if self.first_model.training:
             outputs, aux_outputs = self.first_model(x)
-            return self.forward_stage2(outputs), self.forward_stage2(aux_outputs)
+            return outputs, aux_outputs, self.forward_stage2(outputs), self.forward_stage2(aux_outputs)
 
         else:
             outputs = self.first_model(x)
